@@ -13,17 +13,16 @@ var DB *sqlx.DB
 func ConnectDB(cfg config.Variable) *sqlx.DB {
 	connString := cfg.DBUrl
 
-	DB, err := sqlx.Connect("postgres", connString)
+	var err error
+
+	DB, err = sqlx.Connect("postgres", connString)
 	if err != nil {
-		log.Fatal("Error connecting to database:  %w", err)
+		log.Fatalf("Error connecting to database: %v", err)
 	}
 
 	if err = DB.Ping(); err != nil {
-		log.Fatal("Error pinging the database: %w", err)
+		log.Fatalf("Error pinging the database: %v", err)
 	}
-
-	defer DB.Close()
-
 
 	log.Printf("Connection to database established successfully!")
 	return DB

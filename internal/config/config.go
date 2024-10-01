@@ -9,7 +9,7 @@ import (
 
 type Variable struct {
 	Port       string
-	DBUrl	   string
+	DBUrl      string
 	DBUser     string
 	DBPassword string
 	DBName     string
@@ -26,14 +26,14 @@ func LoadEnv() *Variable {
 	}
 
 	return &Variable{
-		Port: os.Getenv("PORT"),
-		DBUrl: os.Getenv("DATABASE_URL"),
-		DBUser: os.Getenv("DB_USER"),
+		Port:       os.Getenv("PORT"),
+		DBUrl:      os.Getenv("DATABASE_URL"),
+		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
-		DBName: os.Getenv("DB_NAME"),
-		DBHost: os.Getenv("DB_HOST"),
-		DBPort: os.Getenv("DB_PORT"),
-		RedisURL: os.Getenv("REDIS_URL"),
-		JWTSecret: os.Getenv("JWT_SECRET"),
+		DBName:     os.Getenv("DB_NAME"),
+		DBHost:     os.Getenv("DB_HOST"),
+		DBPort:     os.Getenv("DB_PORT"),
+		RedisURL:   os.Getenv("REDIS_URL"),
+		JWTSecret:  os.Getenv("JWT_SECRET"),
 	}
 }
