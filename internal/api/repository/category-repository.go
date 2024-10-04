@@ -24,9 +24,9 @@ func (r *CategoryRepository) GetCategories() ([]models.Category, error) {
 func (r *CategoryRepository) CreateCategory(category *models.Category) error {
 	query := `
         INSERT INTO categories (name, description, store_id)
-        VALUES ($1, $2, $3, $4)
+        VALUES ($1, $2, $3)
         RETURNING id, created_at, updated_at`
-	err := r.DB.QueryRowx(query, category.Name, category.Description, category.ParentID, category.StoreID).
+	err := r.DB.QueryRowx(query, category.Name, category.Description, category.StoreID).
 		Scan(&category.ID, &category.CreatedAt, &category.UpdatedAt)
 	return err
 }

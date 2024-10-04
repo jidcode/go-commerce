@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func Router(authService *auth.AuthService, authRouter *handlers.AuthHandler, storeRouter *handlers.StoreHandler) *echo.Echo {
+func Router(authService *auth.AuthService, authRouter *handlers.AuthHandler, storeRouter *handlers.StoreHandler, categoryRouter *handlers.CategoryHandler) *echo.Echo {
 	// New router
 	e := echo.New()
 
@@ -24,7 +24,7 @@ func Router(authService *auth.AuthService, authRouter *handlers.AuthHandler, sto
 
 	// Health Check
 	e.GET("/health", func(ctx echo.Context) error {
-		return ctx.JSON(200, map[string]string{"status": "OK!!"})
+		return ctx.JSON(200, map[string]string{"status": "OK"})
 	})
 
 	// Authentication Routes
@@ -41,6 +41,13 @@ func Router(authService *auth.AuthService, authRouter *handlers.AuthHandler, sto
 	protectedGroup.GET("/stores/:id", storeRouter.GetStoreByID)
 	protectedGroup.PUT("/stores/:id", storeRouter.UpdateStore)
 	protectedGroup.DELETE("/stores/:id", storeRouter.DeleteStore)
+
+	//category routes
+	protectedGroup.GET("/categories", categoryRouter.GetCategories)
+	protectedGroup.POST("/categories", categoryRouter.CreateCategory)
+	protectedGroup.GET("/categories/:id", categoryRouter.GetCategoryByID)
+	protectedGroup.PUT("/categories/:id", categoryRouter.UpdateCategory)
+	protectedGroup.DELETE("/categories/:id", categoryRouter.DeleteCategory)
 
 	// Admin routes
 	adminGroup := protectedGroup.Group("/admin")
