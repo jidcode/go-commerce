@@ -11,7 +11,13 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func Router(authService *auth.AuthService, authRouter *handlers.AuthHandler, storeRouter *handlers.StoreHandler, categoryRouter *handlers.CategoryHandler) *echo.Echo {
+func Router(
+	authService *auth.AuthService,
+	authRouter *handlers.AuthHandler,
+	storeRouter *handlers.StoreHandler,
+	categoryRouter *handlers.CategoryHandler,
+	productRouter *handlers.ProductHandler) *echo.Echo {
+
 	// New router
 	e := echo.New()
 
@@ -27,31 +33,66 @@ func Router(authService *auth.AuthService, authRouter *handlers.AuthHandler, sto
 		return ctx.JSON(200, map[string]string{"status": "OK"})
 	})
 
-	// Authentication Routes
-	e.POST("/register", authRouter.Register)
-	e.POST("/login", authRouter.Login)
-
-	// Protected routes
-	protectedGroup := e.Group("/api")
-	protectedGroup.Use(customMiddleware.JWTMiddleware(authService))
-
-	// Store routes
-	protectedGroup.GET("/stores", storeRouter.GetStores)
-	protectedGroup.POST("/stores", storeRouter.CreateStore)
-	protectedGroup.GET("/stores/:id", storeRouter.GetStoreByID)
-	protectedGroup.PUT("/stores/:id", storeRouter.UpdateStore)
-	protectedGroup.DELETE("/stores/:id", storeRouter.DeleteStore)
-
-	//category routes
-	protectedGroup.GET("/categories", categoryRouter.GetCategories)
-	protectedGroup.POST("/categories", categoryRouter.CreateCategory)
-	protectedGroup.GET("/categories/:id", categoryRouter.GetCategoryByID)
-	protectedGroup.PUT("/categories/:id", categoryRouter.UpdateCategory)
-	protectedGroup.DELETE("/categories/:id", categoryRouter.DeleteCategory)
-
-	// Admin routes
-	adminGroup := protectedGroup.Group("/admin")
-	adminGroup.Use(customMiddleware.RoleMiddleware("admin"))
+	// Register routes
+	RegisterAuthRoutes(e, authRouter)
+	RegisterStoreRoutes(e, authService, storeRouter)
+	RegisterCategoryRoutes(e, authService, categoryRouter)
+	RegisterProductRoutes(e, authService, productRouter)
 
 	return e
 }
+
+// RegisterAuthRoutes handles authentication-related routes
+func RegisterAuthRoutes(e *echo.Echo, authRouter *handlers.AuthHandler) {
+	e.POST("/register", authRouter.Register)
+	e.POST("/login", authRouter.Login)
+}
+
+// RegisterStoreRoutes handles store-related routes
+func RegisterStoreRoutes(e *echo.Echo, authService *auth.AuthService, storeRouter *handlers.StoreHandler) {
+	api := e.Group("/api")
+	api.Use(customMiddleware.JWTMiddleware(authService))
+
+	api.GET("/stores", storeRouter.GetStores)
+	api.POST("/stores", storeRouter.CreateStore)
+	api.GET("/stores/:id", storeRouter.GetStoreByID)
+	api.PUT("/stores/:id", storeRouter.UpdateStore)
+	api.DELETE("/stores/:id", storeRouter.DeleteStore)
+}
+
+// RegisterCategoryRoutes handles category-related routes
+func RegisterCategoryRoutes(e *echo.Echo, authService *auth.AuthService, categoryRouter *handlers.CategoryHandler) {
+	api := e.Group("/api")
+	api.Use(customMiddleware.JWTMiddleware(authService))
+
+	api.GET("/categories", categoryRouter.GetCategories)
+	api.POST("/categories", categoryRouter.CreateCategory)
+	api.GET("/categories/:id", categoryRouter.GetCategoryByID)
+	api.PUT("/categories/:id", categoryRouter.UpdateCategory)
+	api.DELETE("/categories/:id", categoryRouter.DeleteCategory)
+}
+
+// RegisterCategoryRoutes handles category-related routes
+func RegisterProductRoutes(e *echo.Echo, authService *auth.AuthService, productRouter *handlers.ProductHandler) {
+	api := e.Group("/api")
+	api.Use(customMiddleware.JWTMiddleware(authService))
+
+	api.GET("/products", productRouter.GetProducts)
+	api.POST("/products", productRouter.CreateProduct)
+	api.GET("/products/:id", productRouter.GetProductByID)
+	api.PUT("/products/:id", productRouter.UpdateProduct)
+	api.DELETE("/products/:id", productRouter.DeleteProduct)
+}
+
+// func RegisterAdminRoutes(e *echo.Echo, categoryHandler *handlers.CategoryHandler) {
+// 	// Protect category management routes with admin-only middleware
+// 	adminGroup := e.Group("/admin", middleware.RoleMiddleware("admin"))
+
+// 	adminGroup.POST("/categories", categoryHandler.CreateCategory)
+// 	adminGroup.PUT("/categories/:id", categoryHandler.UpdateCategory)
+// 	adminGroup.DELETE("/categories/:id", categoryHandler.DeleteCategory)
+
+// 	// Public access to view categories
+// 	e.GET("/categories", categoryHandler.GetCategories)
+// 	e.GET("/categories/:id", categoryHandler.GetCategoryByID)
+// }

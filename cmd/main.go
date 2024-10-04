@@ -21,6 +21,7 @@ func main() {
 	userRepo := repository.NewUserRepository(db.DB)
 	storeRepo := repository.NewStoreRepository(db.DB)
 	categoryRepo := repository.NewCategoryRepository(db.DB)
+	productRepo := repository.NewProductRepository(db.DB)
 
 	// Initialize services
 	authService := auth.NewAuthService(userRepo, cfg)
@@ -29,9 +30,10 @@ func main() {
 	authRouter := handlers.NewAuthHandler(authService)
 	storeRouter := handlers.NewStoreHandler(storeRepo)
 	categoryRouter := handlers.NewCategoryHandler(categoryRepo)
+	productRouter := handlers.NewProductHandler(productRepo)
 
 	// Set up routes
-	router := routes.Router(authService, authRouter, storeRouter, categoryRouter)
+	router := routes.Router(authService, authRouter, storeRouter, categoryRouter, productRouter)
 
 	// Start server
 	log.Println("Starting server on :5000...")

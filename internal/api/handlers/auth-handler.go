@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/jidcode/go-commerce/internal/services/auth"
@@ -24,11 +25,11 @@ func (h *AuthHandler) Register(c echo.Context) error {
 	}
 
 	if err := c.Bind(&input); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "Binding failed")
 	}
 
 	if err := c.Validate(input); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "Validation failed")
 	}
 
 	user, err := h.authService.RegisterUser(input.Email, input.Password, input.Username)
@@ -47,11 +48,12 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	}
 
 	if err := c.Bind(&input); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		log.Printf("Error binding input: %v", err)
+		return echo.NewHTTPError(http.StatusBadRequest, "Binding failed")
 	}
 
 	if err := c.Validate(input); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "Validation failed")
 	}
 
 	token, err := h.authService.LoginUser(input.Email, input.Password)
