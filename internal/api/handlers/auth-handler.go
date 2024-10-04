@@ -42,7 +42,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 // LOGIN
 func (h *AuthHandler) Login(c echo.Context) error {
 	var input struct {
-		Email    string `json:"email" validate:"required, email"`
+		Email    string `json:"email" validate:"required,email"`
 		Password string `json:"password" validate:"required"`
 	}
 
